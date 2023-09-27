@@ -3,7 +3,7 @@
 ## Preparing for the build
 
 Get a few prerequisites:
-- a copy of godot from (this fork)[https://github.com/Teapot4195/godot]
+- a copy of godot from [this fork](https://github.com/Teapot4195/godot)
 - a C++ compiler
 - SCons build tool
 - Git
