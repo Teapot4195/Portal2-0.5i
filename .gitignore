@@ -16,3 +16,12 @@ mono_crash.*.json
 
 # GDExtension specific ignores
 extension_api.json
+
+# SCons specific ignores
+.sconsign.dblite
+
+# Ignore all binary files
+*.framework
+*.dll
+*.so
+*.exe
