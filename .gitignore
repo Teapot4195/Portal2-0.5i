@@ -25,3 +25,4 @@ extension_api.json
 *.dll
 *.so
 *.exe
+*.os
