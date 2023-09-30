@@ -1,5 +1,6 @@
-[gd_scene load_steps=5 format=3 uid="uid://c6ea6rrabd0rn"]
+[gd_scene load_steps=6 format=3 uid="uid://c6ea6rrabd0rn"]
 
+[ext_resource type="Texture2D" path="res://textures/dev.webp" id="1_8upds"]
 [ext_resource type="PackedScene" uid="uid://djxbwq1uang3u" path="res://objects/player.tscn" id="1_cmg1c"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_2e3p2"]
@@ -8,8 +9,12 @@ size = Vector3(20, 1, 20)
 [sub_resource type="BoxMesh" id="BoxMesh_nmu78"]
 size = Vector3(20, 1, 20)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_yvv7p"]
-albedo_color = Color(0, 0, 1, 1)
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7glwo"]
+albedo_texture = ExtResource("1_8upds")
+uv1_scale = Vector3(20, 20, 1)
+uv1_offset = Vector3(0.35, 0, 0)
+uv2_scale = Vector3(20, 20, 0)
+texture_filter = 5
 
 [node name="Node3D" type="Node3D"]
 
@@ -26,7 +31,7 @@ shape = SubResource("BoxShape3D_2e3p2")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="floor"]
 mesh = SubResource("BoxMesh_nmu78")
-surface_material_override/0 = SubResource("StandardMaterial3D_yvv7p")
+surface_material_override/0 = SubResource("StandardMaterial3D_7glwo")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.5, 0.612372, -0.612372, 3.09086e-08, 0.707107, 0.707107, 0.866025, -0.353553, 0.353553, -8, 9, 4)
