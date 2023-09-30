@@ -7,7 +7,11 @@ const jump_time := 0.85; # How long a jump takes under Earth's gravity (assuming
 const mouse_sensitivity = 0.01;
 const walk_speed = 5;
 const run_speed = 9;
+const player_full_height = 2;
+const player_crouch_height = 1.2;
+const height_difference = player_full_height - player_crouch_height;
 
+@onready var collider = $CollisionShape3D;
 @onready var head = $Head;
 @onready var camera = $Head/Camera3D;
 
@@ -25,6 +29,19 @@ func _unhandled_input(event):
 func _physics_process(delta):
 	if (Input.is_action_pressed("run")): speed = run_speed;
 	else: speed = walk_speed;
+	
+	if (Input.is_action_pressed("crouch")): # TODO decrease speed while crouching, sliding, wall-running, vaulting
+		(collider.shape as CapsuleShape3D).height = player_crouch_height; # scale size with 
+	else:
+		(collider.shape as CapsuleShape3D).height = player_full_height;
+	
+	if (Input.is_action_just_pressed("crouch")): # when you crouch your legs don't move up, but scaling is from center so we need to compensate
+		collider.position.y -= height_difference / 2;# half bc scales from center
+		camera.position.y -= height_difference / 2;
+	
+	if (Input.is_action_just_released("crouch")): # when you crouch your legs don't move up, but scaling is from center so we need to compensate
+		collider.position.y += height_difference / 2;# half bc scales from center
+		camera.position.y += height_difference / 2;
 	
 	if(not is_on_floor()): # gravity
 		velocity.y -= gravity * delta;
