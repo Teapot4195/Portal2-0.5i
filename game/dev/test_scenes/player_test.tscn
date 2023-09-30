@@ -1,0 +1,34 @@
+[gd_scene load_steps=5 format=3 uid="uid://c6ea6rrabd0rn"]
+
+[ext_resource type="PackedScene" uid="uid://djxbwq1uang3u" path="res://objects/player.tscn" id="1_cmg1c"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_2e3p2"]
+size = Vector3(20, 1, 20)
+
+[sub_resource type="BoxMesh" id="BoxMesh_nmu78"]
+size = Vector3(20, 1, 20)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_yvv7p"]
+albedo_color = Color(0, 0, 1, 1)
+
+[node name="Node3D" type="Node3D"]
+
+[node name="floor" type="RigidBody3D" parent="."]
+axis_lock_linear_x = true
+axis_lock_linear_y = true
+axis_lock_linear_z = true
+axis_lock_angular_x = true
+axis_lock_angular_y = true
+axis_lock_angular_z = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="floor"]
+shape = SubResource("BoxShape3D_2e3p2")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="floor"]
+mesh = SubResource("BoxMesh_nmu78")
+surface_material_override/0 = SubResource("StandardMaterial3D_yvv7p")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.5, 0.612372, -0.612372, 3.09086e-08, 0.707107, 0.707107, 0.866025, -0.353553, 0.353553, -8, 9, 4)
+
+[node name="Player" parent="." instance=ExtResource("1_cmg1c")]
