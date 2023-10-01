@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://c6ea6rrabd0rn"]
+[gd_scene load_steps=8 format=3 uid="uid://c6ea6rrabd0rn"]
 
 [ext_resource type="Texture2D" uid="uid://b4w5gwyuupu6p" path="res://textures/dev.webp" id="1_8upds"]
 [ext_resource type="PackedScene" uid="uid://djxbwq1uang3u" path="res://objects/player.tscn" id="1_cmg1c"]
@@ -16,9 +16,14 @@ uv1_offset = Vector3(0.35, 0, 0)
 uv2_scale = Vector3(20, 20, 0)
 texture_filter = 5
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_n8io3"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_rewa7"]
+
 [node name="Node3D" type="Node3D"]
 
 [node name="floor" type="RigidBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.38994, 0)
 axis_lock_linear_x = true
 axis_lock_linear_y = true
 axis_lock_linear_z = true
@@ -37,3 +42,25 @@ surface_material_override/0 = SubResource("StandardMaterial3D_7glwo")
 transform = Transform3D(0.5, 0.612372, -0.612372, 3.09086e-08, 0.707107, 0.707107, 0.866025, -0.353553, 0.353553, -8, 9, 4)
 
 [node name="Player" parent="." instance=ExtResource("1_cmg1c")]
+
+[node name="template_prop" type="RigidBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.46041, 4.91636)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="template_prop"]
+shape = SubResource("BoxShape3D_n8io3")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="template_prop"]
+mesh = SubResource("BoxMesh_rewa7")
+
+[node name="template_prop2" type="RigidBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.46041, 4.91636)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="template_prop2"]
+shape = SubResource("BoxShape3D_n8io3")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="template_prop2"]
+mesh = SubResource("BoxMesh_rewa7")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.953043, 0.302836, 0, -0.302836, 0.953043, 0, 1.84866, 9.45683)
+fov = 90.5
