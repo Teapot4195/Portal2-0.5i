@@ -1,7 +1,6 @@
-[gd_scene load_steps=13 format=3 uid="uid://cu3r0uwi1tjq7"]
+[gd_scene load_steps=12 format=3 uid="uid://cu3r0uwi1tjq7"]
 
-[ext_resource type="PackedScene" uid="uid://djxbwq1uang3u" path="res://objects/player.tscn" id="1_7564g"]
-[ext_resource type="PackedScene" uid="uid://cphwvfjriij8v" path="res://objects/Portal.tscn" id="2_1n3f0"]
+[ext_resource type="PackedScene" uid="uid://c6yspn1eqgigu" path="res://objects/portal_pair.tscn" id="1_cx78e"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_jjvny"]
 size = Vector3(50, 1, 50)
@@ -89,12 +88,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0)
 mesh = SubResource("BoxMesh_6alac")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 27, 0)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 27, 3)
 light_color = Color(1, 1, 0.929412, 1)
 light_energy = 0.838
 shadow_enabled = true
 
-[node name="Player" parent="." instance=ExtResource("1_7564g")]
-
-[node name="Portal" parent="." instance=ExtResource("2_1n3f0")]
-transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 1, 7)
+[node name="PortalPair" parent="." instance=ExtResource("1_cx78e")]

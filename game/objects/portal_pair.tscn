@@ -1,0 +1,76 @@
+[gd_scene load_steps=11 format=3 uid="uid://c6yspn1eqgigu"]
+
+[ext_resource type="Script" path="res://scripts/BluePortalCamera.gd" id="1_h2na1"]
+[ext_resource type="Shader" path="res://shaders/portal_pair.gdshader" id="2_ajery"]
+[ext_resource type="Script" path="res://scripts/OrangePortalCamera.gd" id="2_utl3i"]
+[ext_resource type="PackedScene" uid="uid://djxbwq1uang3u" path="res://objects/player.tscn" id="3_xuy4c"]
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_l8oy3"]
+viewport_path = NodePath("BluePortal/SubViewport")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_broe8"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("2_ajery")
+shader_parameter/albedo = Color(1, 1, 1, 1)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = null
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/uv1_scale = Vector3(1, 1, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+shader_parameter/texture_albedo = SubResource("ViewportTexture_l8oy3")
+
+[sub_resource type="BoxMesh" id="BoxMesh_0n33f"]
+material = SubResource("ShaderMaterial_broe8")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_oka6k"]
+viewport_path = NodePath("OrangePortal/SubViewport")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jxbge"]
+backlight_enabled = true
+backlight = Color(1, 0.478431, 0, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ignk1"]
+material = SubResource("StandardMaterial3D_jxbge")
+size = Vector3(1, 2, 0)
+
+[node name="PortalPair" type="Node3D"]
+
+[node name="BluePortal" type="Node3D" parent="."]
+
+[node name="SubViewport" type="SubViewport" parent="BluePortal"]
+render_target_update_mode = 4
+
+[node name="Camera3D" type="Camera3D" parent="BluePortal/SubViewport"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.16802, 0)
+script = ExtResource("1_h2na1")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="BluePortal"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -3)
+mesh = SubResource("BoxMesh_0n33f")
+skeleton = NodePath("../..")
+
+[node name="TextureRect" type="TextureRect" parent="BluePortal"]
+visible = false
+offset_right = 40.0
+offset_bottom = 40.0
+texture = SubResource("ViewportTexture_oka6k")
+
+[node name="OrangePortal" type="Node3D" parent="."]
+
+[node name="SubViewport" type="SubViewport" parent="OrangePortal"]
+render_target_update_mode = 4
+
+[node name="Camera3D" type="Camera3D" parent="OrangePortal/SubViewport"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.16802, 0)
+script = ExtResource("2_utl3i")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="OrangePortal"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 3)
+mesh = SubResource("BoxMesh_ignk1")
+
+[node name="Player" parent="." instance=ExtResource("3_xuy4c")]
