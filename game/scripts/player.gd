@@ -10,6 +10,7 @@ const run_speed = 9;
 const player_full_height = 2;
 const player_crouch_height = 1.2;
 const height_difference = player_full_height - player_crouch_height;
+const crouch_speed_modifier = 0.8;
 
 @onready var collider = $CollisionShape3D;
 @onready var head = $Head;
@@ -30,8 +31,9 @@ func _physics_process(delta):
 	if (Input.is_action_pressed("run")): speed = run_speed;
 	else: speed = walk_speed;
 	
-	if (Input.is_action_pressed("crouch")): # TODO decrease speed while crouching, sliding, wall-running, vaulting
+	if (Input.is_action_pressed("crouch")): # TODO decrease speed while crouching, maybe sliding, maybe wall-running, vaulting
 		(collider.shape as CapsuleShape3D).height = player_crouch_height; # scale size with 
+		speed = walk_speed * crouch_speed_modifier; # can multiply every tick because it's set every tick
 	else:
 		(collider.shape as CapsuleShape3D).height = player_full_height;
 	
@@ -45,7 +47,7 @@ func _physics_process(delta):
 	
 	if(not is_on_floor()): # gravity
 		velocity.y -= gravity * delta;
-		
+	
 	elif (Input.is_action_pressed("jump")):
 		jump();
 	# TODO this should be if on floor
