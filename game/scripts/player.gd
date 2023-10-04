@@ -5,7 +5,7 @@ signal fire_blue(player);
 
 var speed;
 var gravity = ProjectSettings.get_setting("physics/3d/default_gravity");
-
+# TODO if you ramp jump time, it's clear something is wrong with jump_height
 const jump_height := 1.2; # How high the player can jump under Earth's gravity
 const jump_time := 0.85; # How long a jump takes under Earth's gravity (assuming floor height is constant)
 const mouse_sensitivity = 0.01;
@@ -18,6 +18,7 @@ const crouch_speed_modifier = 0.8;
 const reach_distance = 3;
 const ideal_hold_distance = 2;
 const max_hold_mass = 15; # the max mass the player can hold
+const held_obj_impulse_scale = 6.0;
 
 @onready var collider = $CollisionShape3D;
 @onready var head = $Head;
@@ -39,10 +40,11 @@ func _unhandled_input(event):
  # TODO if too heavy, don't pick up 
 func hold_object(object):
 	held_object = object;
-	held_object.freeze = true; # TODO THIS IS FOR DEBUG, REMOVE LATER
+	#held_object.freeze = true; # for debug
 	held_object.sleeping = true; # gotta disable the object while messing with it
 	held_object_parent = object.get_parent();
 	object.reparent(self);
+	held_object.gravity_scale = 0;
 	held_object.sleeping = false; # re-enable object
 
 func is_held(object): # keep in mind, this doesn't do a null check
@@ -53,20 +55,25 @@ func drop_object():
 	held_object.sleeping = true; # gotta disable the object while messing with it
 	self.remove_child(held_object);
 	self.get_parent().add_child(held_object);
+	held_object.gravity_scale = gravity;
 	held_object.sleeping = false;
 	held_object = null; # re-enable object
 
 func _physics_process(delta): # TODO center and spin object when hold
 	# move held item towards desired distance
 	if (held_object != null):# DESIRED POSITION SHOULD USE TRIG, IDK WHAT I DID BUT ITS PROBABLY WRONG
-		var cam_rot = camera.rotation;
+		var cam_rot = head.rotation + camera.rotation; # TODO if gets too far away, unprop
 		
-		var desired_position = camera.global_position + Vector3(); # TODO different acceleration based on difference in pos
-		# TODO RN THE TRIG
+		var desired_position = camera.position + Vector3(-ideal_hold_distance*sin(cam_rot.y), 
+														  ideal_hold_distance*sin(cam_rot.x),
+														 -ideal_hold_distance*cos(cam_rot.y)); 
+		# TODO different acceleration based on difference in pos
 		
 		var dir = (desired_position - held_object.position).normalized(); #find the direction of travel
-		var desired_impulse = dir * desired_position.distance_to(held_object.position) / 8; # Get good velocity for obj
-		held_object.position = desired_position;
+		var desired_impulse = dir * desired_position.distance_to(held_object.position) * held_obj_impulse_scale; # Get good velocity for obj
+		#held_object.position = desired_position; # for debug
+		held_object.linear_velocity = Vector3.ZERO;
+		(held_object as RigidBody3D).apply_impulse(desired_impulse);
 	
 	if (Input.is_action_just_pressed("fire_blue")): fire_blue.emit(self);
 	if (Input.is_action_just_pressed("fire_orange")): fire_orange.emit(self);
@@ -76,7 +83,6 @@ func _physics_process(delta): # TODO center and spin object when hold
 			# Currently holding a prop, put it down
 			held_object.reparent(held_object_parent);
 			held_object = null;
-		
 		
 		var space_state = get_world_3d().direct_space_state # get the space
 		var mousepos = get_viewport().get_mouse_position(); # if moving, it may not be in the exact center of the screen
