@@ -20,7 +20,7 @@ texture_filter = 5
 
 [sub_resource type="BoxMesh" id="BoxMesh_rewa7"]
 
-[node name="Node3D" type="Node3D"]
+[node name="player_test" type="Node3D"]
 
 [node name="floor" type="RigidBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.38994, 0)
