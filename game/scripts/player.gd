@@ -24,6 +24,7 @@ const max_hold_mass = 15; # the max mass the player can hold
 @onready var camera = $Head/Camera3D;
 
 var held_object = null;
+var held_object_parent;
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -39,8 +40,8 @@ func _unhandled_input(event):
 func hold_object(object):
 	held_object = object;
 	held_object.sleeping = true; # gotta disable the object while messing with it
-	object.get_parent().remove_child(object);
-	self.add_child(object);
+	held_object_parent = object.get_parent();
+	object.reparent(self);
 	held_object.sleeping = false; # re-enable object
 
 func is_held(object): # keep in mind, this doesn't do a null check
@@ -67,20 +68,22 @@ func _physics_process(delta): # TODO center and spin object when hold
 	
 	if (Input.is_action_just_pressed("interact")): # TODO check if prop. Will be solved when we stop player picking up heavy objects
 		if (held_object != null):
-			held_object.get_parent().remove_child(held_object);
-		
-		var space_state = get_world_3d().direct_space_state # get the space
-		var mousepos = get_viewport().get_mouse_position(); # if moving, it may not be in the exact center of the screen
-		
-		var origin = camera.project_ray_origin(mousepos); # ray start pos
-		var end = origin + camera.project_ray_normal(mousepos) * reach_distance; # ray end pos
-		var query = PhysicsRayQueryParameters3D.create(origin, end); # cast ray
-		query.exclude = [collider]; # the ray starts in the player's collider, but we don't want it to hit that so it needs to be exhempt
-		
-		
-		var result = space_state.intersect_ray(query); # find out whether it hit anything
-		if (result.get("collider") != null): # to stop null error if there's nothing to pick up
-			hold_object(result.get("collider"));
+			# Currently holding a prop, put it down
+			held_object.reparent(held_object_parent);
+			held_object = null;
+		else:
+			var space_state = get_world_3d().direct_space_state # get the space
+			var mousepos = get_viewport().get_mouse_position(); # if moving, it may not be in the exact center of the screen
+			
+			var origin = camera.project_ray_origin(mousepos); # ray start pos
+			var end = origin + camera.project_ray_normal(mousepos) * reach_distance; # ray end pos
+			var query = PhysicsRayQueryParameters3D.create(origin, end); # cast ray
+			query.exclude = [collider]; # the ray starts in the player's collider, but we don't want it to hit that so it needs to be exhempt
+			
+			
+			var result = space_state.intersect_ray(query); # find out whether it hit anything
+			if (result.get("collider") != null): # to stop null error if there's nothing to pick up
+				hold_object(result.get("collider"));
 	
 	if (Input.is_action_pressed("run")): speed = run_speed;
 	else: speed = walk_speed;
