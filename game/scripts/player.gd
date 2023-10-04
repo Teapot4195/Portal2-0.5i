@@ -1,6 +1,6 @@
 extends CharacterBody3D
 
-signal fire_orange(player); # not implemented yet
+signal fire_orange(player);
 signal fire_blue(player);
 
 var speed;
@@ -15,7 +15,7 @@ const player_full_height = 2;
 const player_crouch_height = 1.2;
 const height_difference = player_full_height - player_crouch_height;
 const crouch_speed_modifier = 0.8;
-const reach_distance = 2;
+const reach_distance = 3;
 const ideal_hold_distance = 2;
 const max_hold_mass = 15; # the max mass the player can hold
 
@@ -39,6 +39,7 @@ func _unhandled_input(event):
  # TODO if too heavy, don't pick up 
 func hold_object(object):
 	held_object = object;
+	held_object.freeze = true; # TODO THIS IS FOR DEBUG, REMOVE LATER
 	held_object.sleeping = true; # gotta disable the object while messing with it
 	held_object_parent = object.get_parent();
 	object.reparent(self);
@@ -57,11 +58,15 @@ func drop_object():
 
 func _physics_process(delta): # TODO center and spin object when hold
 	# move held item towards desired distance
-	if (held_object != null):
-		var desired_position = head.transform.basis * Vector3(0, 0, ideal_hold_distance); # TODO different acceleration based on difference in pos
+	if (held_object != null):# DESIRED POSITION SHOULD USE TRIG, IDK WHAT I DID BUT ITS PROBABLY WRONG
+		var cam_rot = camera.rotation;
+		
+		var desired_position = camera.global_position + Vector3(); # TODO different acceleration based on difference in pos
+		# TODO RN THE TRIG
+		
 		var dir = (desired_position - held_object.position).normalized(); #find the direction of travel
 		var desired_impulse = dir * desired_position.distance_to(held_object.position) / 8; # Get good velocity for obj
-		
+		held_object.position = desired_position;
 	
 	if (Input.is_action_just_pressed("fire_blue")): fire_blue.emit(self);
 	if (Input.is_action_just_pressed("fire_orange")): fire_orange.emit(self);
@@ -71,24 +76,25 @@ func _physics_process(delta): # TODO center and spin object when hold
 			# Currently holding a prop, put it down
 			held_object.reparent(held_object_parent);
 			held_object = null;
-		else:
-			var space_state = get_world_3d().direct_space_state # get the space
-			var mousepos = get_viewport().get_mouse_position(); # if moving, it may not be in the exact center of the screen
-			
-			var origin = camera.project_ray_origin(mousepos); # ray start pos
-			var end = origin + camera.project_ray_normal(mousepos) * reach_distance; # ray end pos
-			var query = PhysicsRayQueryParameters3D.create(origin, end); # cast ray
-			query.exclude = [collider]; # the ray starts in the player's collider, but we don't want it to hit that so it needs to be exhempt
-			
-			
-			var result = space_state.intersect_ray(query); # find out whether it hit anything
-			if (result.get("collider") != null): # to stop null error if there's nothing to pick up
-				hold_object(result.get("collider"));
+		
+		
+		var space_state = get_world_3d().direct_space_state # get the space
+		var mousepos = get_viewport().get_mouse_position(); # if moving, it may not be in the exact center of the screen
+		
+		var origin = camera.project_ray_origin(mousepos); # ray start pos
+		var end = origin + camera.project_ray_normal(mousepos) * reach_distance; # ray end pos
+		var query = PhysicsRayQueryParameters3D.create(origin, end); # cast ray
+		query.exclude = [collider]; # the ray starts in the player's collider, but we don't want it to hit that so it needs to be exhempt
+		
+		
+		var result = space_state.intersect_ray(query); # find out whether it hit anything
+		if (result.get("collider") != null): # to stop null error if there's nothing to pick up
+			hold_object(result.get("collider"));
 	
 	if (Input.is_action_pressed("run")): speed = run_speed;
 	else: speed = walk_speed;
 	
-	if (Input.is_action_pressed("crouch")): # TODO decrease speed while crouching, maybe sliding, maybe wall-running, vaulting
+	if (Input.is_action_pressed("crouch")): # TODO maybe sliding, maybe wall-running, maybe vaulting
 		(collider.shape as CapsuleShape3D).height = player_crouch_height; # scale size with 
 		speed = walk_speed * crouch_speed_modifier; # can multiply every tick because it's set every tick
 	else:
