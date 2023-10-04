@@ -53,7 +53,6 @@ func is_held(object): # keep in mind, this doesn't do a null check
 func drop_object():
 	if (held_object == null): return;
 	held_object.sleeping = true; # gotta disable the object while messing with it
-	self.remove_child(held_object);
 	self.get_parent().add_child(held_object);
 	held_object.gravity_scale = gravity;
 	held_object.sleeping = false;
@@ -83,19 +82,20 @@ func _physics_process(delta): # TODO center and spin object when hold
 			# Currently holding a prop, put it down
 			held_object.reparent(held_object_parent);
 			held_object = null;
-		
-		var space_state = get_world_3d().direct_space_state # get the space
-		var mousepos = get_viewport().get_mouse_position(); # if moving, it may not be in the exact center of the screen
-		
-		var origin = camera.project_ray_origin(mousepos); # ray start pos
-		var end = origin + camera.project_ray_normal(mousepos) * reach_distance; # ray end pos
-		var query = PhysicsRayQueryParameters3D.create(origin, end); # cast ray
-		query.exclude = [collider]; # the ray starts in the player's collider, but we don't want it to hit that so it needs to be exhempt
-		
-		
-		var result = space_state.intersect_ray(query); # find out whether it hit anything
-		if (result.get("collider") != null): # to stop null error if there's nothing to pick up
-			hold_object(result.get("collider"));
+
+		else:
+			var space_state = get_world_3d().direct_space_state # get the space
+			var mousepos = get_viewport().get_mouse_position(); # if moving, it may not be in the exact center of the screen
+
+			var origin = camera.project_ray_origin(mousepos); # ray start pos
+			var end = origin + camera.project_ray_normal(mousepos) * reach_distance; # ray end pos
+			var query = PhysicsRayQueryParameters3D.create(origin, end); # cast ray
+			query.exclude = [collider]; # the ray starts in the player's collider, but we don't want it to hit that so it needs to be exhempt
+
+
+			var result = space_state.intersect_ray(query); # find out whether it hit anything
+			if (result.get("collider") != null): # to stop null error if there's nothing to pick up
+				hold_object(result.get("collider"));
 	
 	if (Input.is_action_pressed("run")): speed = run_speed;
 	else: speed = walk_speed;

@@ -14,6 +14,10 @@ config/name="Portal2+0.5i"
 config/features=PackedStringArray("4.2", "Forward Plus")
 config/icon="res://icon.svg"
 
+[autoload]
+
+Hud="*res://objects/hud.tscn"
+
 [input]
 
 jump={
