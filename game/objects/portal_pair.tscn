@@ -96,6 +96,9 @@ shape = SubResource("BoxShape3D_i30pq")
 
 [node name="Player" parent="." instance=ExtResource("3_xuy4c")]
 
+[node name="Camera3D" parent="Player/Head" index="0"]
+current = true
+
 [connection signal="body_entered" from="BluePortal/Area3D" to="." method="_blue_portal_entered"]
 [connection signal="body_exited" from="BluePortal/Area3D" to="." method="_blue_portal_exited"]
 [connection signal="body_entered" from="OrangePortal/Area3D" to="." method="_orange_portal_entered"]

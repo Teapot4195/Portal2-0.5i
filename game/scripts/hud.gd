@@ -1,6 +1,6 @@
 extends Control
 
-@onready var main_scene: Node3D = $"/root/player_test"; # This only handles the player_test scene currently!
+var player: Node3D;
 
 #Hud information displays
 @onready var state: Label = $State;
@@ -12,8 +12,10 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	var player: CharacterBody3D = main_scene.get_node("Player");
-	state.set_text("Velocity: " + str(player.get_velocity()) + "\n" +
-				   "Position: " + str(player.global_position)
-	)
+	if player == null:
+		player = get_tree().root.find_child("Player");
+	else:
+		state.set_text("Velocity: " + str(player.get_velocity()) + "\n" +
+					   "Position: " + str(player.global_position)
+		)
 	pass
