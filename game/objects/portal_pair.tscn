@@ -1,12 +1,13 @@
-[gd_scene load_steps=11 format=3 uid="uid://c6yspn1eqgigu"]
+[gd_scene load_steps=14 format=3 uid="uid://c6yspn1eqgigu"]
 
 [ext_resource type="Script" path="res://scripts/BluePortalCamera.gd" id="1_h2na1"]
+[ext_resource type="Script" path="res://scripts/PortalManager.gd" id="1_w0jln"]
 [ext_resource type="Shader" path="res://shaders/portal_pair.gdshader" id="2_ajery"]
 [ext_resource type="Script" path="res://scripts/OrangePortalCamera.gd" id="2_utl3i"]
 [ext_resource type="PackedScene" uid="uid://djxbwq1uang3u" path="res://objects/player.tscn" id="3_xuy4c"]
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_l8oy3"]
-viewport_path = NodePath("BluePortal/SubViewport")
+viewport_path = NodePath("OrangePortal/SubViewport")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_broe8"]
 resource_local_to_scene = true
@@ -26,9 +27,13 @@ shader_parameter/texture_albedo = SubResource("ViewportTexture_l8oy3")
 
 [sub_resource type="BoxMesh" id="BoxMesh_0n33f"]
 material = SubResource("ShaderMaterial_broe8")
+size = Vector3(1, 2, 0)
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_oka6k"]
 viewport_path = NodePath("OrangePortal/SubViewport")
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_pqkqi"]
+size = Vector3(1, 2, 0.5)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jxbge"]
 backlight_enabled = true
@@ -38,7 +43,11 @@ backlight = Color(1, 0.478431, 0, 1)
 material = SubResource("StandardMaterial3D_jxbge")
 size = Vector3(1, 2, 0)
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_i30pq"]
+size = Vector3(1, 2, 0.5)
+
 [node name="PortalPair" type="Node3D"]
+script = ExtResource("1_w0jln")
 
 [node name="BluePortal" type="Node3D" parent="."]
 
@@ -60,6 +69,12 @@ offset_right = 40.0
 offset_bottom = 40.0
 texture = SubResource("ViewportTexture_oka6k")
 
+[node name="Area3D" type="Area3D" parent="BluePortal"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="BluePortal/Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -3)
+shape = SubResource("BoxShape3D_pqkqi")
+
 [node name="OrangePortal" type="Node3D" parent="."]
 
 [node name="SubViewport" type="SubViewport" parent="OrangePortal"]
@@ -73,4 +88,17 @@ script = ExtResource("2_utl3i")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 3)
 mesh = SubResource("BoxMesh_ignk1")
 
+[node name="Area3D" type="Area3D" parent="OrangePortal"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="OrangePortal/Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 3)
+shape = SubResource("BoxShape3D_i30pq")
+
 [node name="Player" parent="." instance=ExtResource("3_xuy4c")]
+
+[connection signal="body_entered" from="BluePortal/Area3D" to="." method="_blue_portal_entered"]
+[connection signal="body_exited" from="BluePortal/Area3D" to="." method="_blue_portal_exited"]
+[connection signal="body_entered" from="OrangePortal/Area3D" to="." method="_orange_portal_entered"]
+[connection signal="body_exited" from="OrangePortal/Area3D" to="." method="_orange_portal_exited"]
+
+[editable path="Player"]
