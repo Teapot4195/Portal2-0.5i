@@ -70,9 +70,9 @@ offset_bottom = 40.0
 texture = SubResource("ViewportTexture_oka6k")
 
 [node name="Area3D" type="Area3D" parent="BluePortal"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -3)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="BluePortal/Area3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -3)
 shape = SubResource("BoxShape3D_pqkqi")
 
 [node name="OrangePortal" type="Node3D" parent="."]
@@ -89,9 +89,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 3)
 mesh = SubResource("BoxMesh_ignk1")
 
 [node name="Area3D" type="Area3D" parent="OrangePortal"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 3)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="OrangePortal/Area3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 3)
 shape = SubResource("BoxShape3D_i30pq")
 
 [node name="Player" parent="." instance=ExtResource("3_xuy4c")]
