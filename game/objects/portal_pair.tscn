@@ -33,7 +33,7 @@ size = Vector3(1, 2, 0)
 viewport_path = NodePath("OrangePortal/SubViewport")
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_pqkqi"]
-size = Vector3(1, 2, 0.5)
+size = Vector3(1, 2, 0.1)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jxbge"]
 backlight_enabled = true
@@ -44,7 +44,7 @@ material = SubResource("StandardMaterial3D_jxbge")
 size = Vector3(1, 2, 0)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_i30pq"]
-size = Vector3(1, 2, 0.5)
+size = Vector3(1, 2, 0.1)
 
 [node name="PortalPair" type="Node3D"]
 script = ExtResource("1_w0jln")

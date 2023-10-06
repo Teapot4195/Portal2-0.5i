@@ -13,7 +13,12 @@ func _ready():
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	if player == null:
-		player = get_tree().root.find_child("Player");
+		var PlayerPathA = "/root/Aperture Test Lab/PortalPair/Player";
+		var PlayerPathB = "/root/player_test/Player";
+		if get_tree().root.has_node(PlayerPathA):
+			player = get_tree().root.get_node(PlayerPathA);
+		if get_tree().root.has_node(PlayerPathB):
+			player = get_tree().root.get_node(PlayerPathB);
 	else:
 		state.set_text("Velocity: " + str(player.get_velocity()) + "\n" +
 					   "Position: " + str(player.global_position)
