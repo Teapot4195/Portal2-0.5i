@@ -24,6 +24,7 @@ texture_filter = 5
 
 [node name="floor" type="RigidBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.38994, 0)
+collision_mask = 3
 axis_lock_linear_x = true
 axis_lock_linear_y = true
 axis_lock_linear_z = true
@@ -42,9 +43,11 @@ surface_material_override/0 = SubResource("StandardMaterial3D_7glwo")
 transform = Transform3D(0.5, 0.612372, -0.612372, 3.09086e-08, 0.707107, 0.707107, 0.866025, -0.353553, 0.353553, -8, 9, 4)
 
 [node name="Player" parent="." instance=ExtResource("1_cmg1c")]
+collision_layer = 2
 
 [node name="template_prop" type="RigidBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.46041, 4.91636)
+collision_mask = 3
 metadata/isProp = true
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="template_prop"]

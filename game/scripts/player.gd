@@ -25,6 +25,8 @@ const held_obj_rot_impulse_scale = PI/256;
 
 var held_object = null;
 var held_object_parent;
+var held_object_collision_mask;
+var held_object_collision_layer;
 
 # Called when the node enters the scene tree for the first time.
 func _ready(): 
@@ -43,6 +45,10 @@ func hold_object(object):
 	held_object_parent = object.get_parent();
 	object.reparent(self);
 	held_object.gravity_scale = 0;
+	held_object_collision_mask = held_object.collision_mask;
+	held_object_collision_layer = held_object.collision_layer;
+	held_object.collision_layer = 0;
+	held_object.collision_mask = 1; # the shift is to make it clear that this is a mask and that I want the first index
 	held_object.sleeping = false; # re-enable object
 
 func is_held(object): # keep in mind, this doesn't do a null check
@@ -51,10 +57,12 @@ func is_held(object): # keep in mind, this doesn't do a null check
 func drop_object():
 	if (held_object == null): return;
 	held_object.sleeping = true; # so we can't get a concurrent exception if this function is called outside the physics loop (which may sometimes be a different thread)
-	self.get_parent().add_child(held_object);
+	held_object.reparent(held_object_parent);
 	held_object.gravity_scale = 1; # TODO add a force rather than resetting the gravity scale to fix that weird bug
-	held_object = null;
+	held_object.collision_mask = held_object_collision_mask;
+	held_object.collision_layer = held_object_collision_layer;
 	held_object.sleeping = false; # re-enable object
+	held_object = null;
 
 # finds the smallest angle between two angles
 func find_angle_difference(angleA, angleB):
@@ -73,23 +81,24 @@ func _physics_process(delta):
 														 -ideal_hold_distance*cos(cam_rot.y)); 
 		
 		var distance = desired_position.distance_to(held_object.position);
-		if (distance > reach_distance): # if too far away TODO this might not work through portals. Maybe also check the through-portal distance for both portals and use this maths on the smallest distance
+		if (held_object.position.length() > reach_distance): # if too far away TODO this might not work through portals. Maybe also check the through-portal distance for both portals and use this maths on the smallest distance
 			drop_object();
 		else:
 			var dir = (desired_position - held_object.position).normalized(); #find the direction of travel
-			var desired_impulse = dir * distance * held_obj_impulse_scale; # Get good velocity for obj
+			var desired_impulse = dir * clamp(distance * held_obj_impulse_scale, 0, 12); # Get good velocity for obj # TODO use bezier interpolate rather than clamp for smoothness
 			#held_object.position = desired_position; # for debug
 			(held_object as RigidBody3D).linear_velocity = Vector3.ZERO; # it's usually bad to set this directly as it may also be set by RigidBody, but in this specific case it's fine, since we don't want it affected by RigidBody
 			(held_object as RigidBody3D).apply_impulse(desired_impulse);
 			
 			# cam_rot is the desired rotation
-			var obj_rot = held_object.rotation;
+			#var obj_rot = held_object.rotation; # TODO use dir from player rather than supposed camera dir
 			#var rot_dir = Vector3(find_angle_difference(obj_rot.x, cam_rot.x),
 			#					  find_angle_difference(obj_rot.y, cam_rot.y),
-			#					  find_angle_difference(obj_rot.z, cam_rot.z)).normalized(); # TODO this might be better if I submit to quaternion weirdness
+			#					  find_angle_difference(obj_rot.z, cam_rot.z)).normalized(); # this might be better if I submit to quaternion weirdness
 			
 			#var desired_torque_impulse = rot_dir;
-			held_object.rotation = cam_rot; # I was going to do something fancy but this seems to work perfectly
+			held_object.rotation = Vector3.ZERO;
+			held_object.rotation.y = self.global_position.direction_to(held_object.global_position).x; # I was going to do something fancy but this seems to work perfectly
 			#(held_object as RigidBody3D).apply_torque_impulse(desired_torque_impulse);
 	
 	if (Input.is_action_just_pressed("fire_blue")): fire_blue.emit(self); # fire portals
