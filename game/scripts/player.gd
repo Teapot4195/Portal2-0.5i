@@ -99,6 +99,7 @@ func _physics_process(delta):
 			#var desired_torque_impulse = rot_dir;
 			held_object.rotation = Vector3.ZERO;
 			held_object.rotation.y = self.global_position.direction_to(held_object.global_position).x; # I was going to do something fancy but this seems to work perfectly
+			Hud.extra_text = held_object.rotation.y
 			#(held_object as RigidBody3D).apply_torque_impulse(desired_torque_impulse);
 	
 	if (Input.is_action_just_pressed("fire_blue")): fire_blue.emit(self); # fire portals
@@ -107,8 +108,7 @@ func _physics_process(delta):
 	if (Input.is_action_just_pressed("interact")):
 		if (held_object != null):
 			# Currently holding a prop, put it down
-			held_object.reparent(held_object_parent);
-			held_object = null;
+			drop_object();
 
 		else:
 			var space_state = get_world_3d().direct_space_state # get the space
