@@ -3,7 +3,7 @@ extends CharacterBody3D
 signal fire_orange(player);
 signal fire_blue(player);
 
-var speed;
+var speed: float;
 var gravity = ProjectSettings.get_setting("physics/3d/default_gravity");
 const jump_height := 1.0; # How high the player can jump under Earth's gravity
 const mouse_sensitivity = 0.01;
@@ -23,10 +23,10 @@ const held_obj_rot_impulse_scale = PI/256;
 @onready var head = $Head;
 @onready var camera = $Head/Camera3D;
 
-var held_object = null;
-var held_object_parent;
-var held_object_collision_mask;
-var held_object_collision_layer;
+var held_object: RigidBody3D;
+var held_object_parent: Node3D;
+var held_object_collision_mask: int;
+var held_object_collision_layer: int;
 
 # Called when the node enters the scene tree for the first time.
 func _ready(): 
@@ -47,6 +47,7 @@ func hold_object(object):
 	held_object.gravity_scale = 0;
 	held_object_collision_mask = held_object.collision_mask;
 	held_object_collision_layer = held_object.collision_layer;
+	held_object.lock_rotation = true;
 	held_object.collision_layer = 0;
 	held_object.collision_mask = 1; # the shift is to make it clear that this is a mask and that I want the first index
 	held_object.sleeping = false; # re-enable object
@@ -58,22 +59,27 @@ func drop_object():
 	if (held_object == null): return;
 	held_object.sleeping = true; # so we can't get a concurrent exception if this function is called outside the physics loop (which may sometimes be a different thread)
 	held_object.reparent(held_object_parent);
-	held_object.gravity_scale = 1; # TODO add a force rather than resetting the gravity scale to fix that weird bug
+	held_object.gravity_scale = 1;
 	held_object.collision_mask = held_object_collision_mask;
 	held_object.collision_layer = held_object_collision_layer;
+	held_object.lock_rotation = false;
 	held_object.sleeping = false; # re-enable object
 	held_object = null;
 
 # finds the smallest angle between two angles
-func find_angle_difference(angleA, angleB):
+func find_angle_difference(angleA: float, angleB: float):
 	var t = abs(angleB - angleA); # find the difference in angle
 	t = fmod(t + PI,2 * PI)-PI; # if t was bigger than half a circle, then the other direction is faster. also if t was more than a full circle than it was redundantly big.
 	t *= sign(angleB-angleA); # fix dir
 	return t;
 
+func lerp_angle(angleA: float, angleB: float, percent: float): # idk wtf slerp() has going on but it's fucked so I made my own
+	var delta = find_angle_difference(angleA, angleB);
+	return angleA + delta * percent;
+
 func _physics_process(delta):
 	# move held item towards desired distance
-	if (held_object != null): # TODO if collding, stop impulse in collide direction
+	if (held_object != null):
 		var cam_rot = head.rotation + camera.rotation;
 		
 		var desired_position = camera.position + Vector3(-ideal_hold_distance*sin(cam_rot.y), 
@@ -85,21 +91,23 @@ func _physics_process(delta):
 			drop_object();
 		else:
 			var dir = (desired_position - held_object.position).normalized(); #find the direction of travel
-			var desired_impulse = dir * clamp(distance * held_obj_impulse_scale, 0, 12); # Get good velocity for obj # TODO use bezier interpolate rather than clamp for smoothness
+			var desired_impulse = dir * clamp(distance * held_obj_impulse_scale, 0, 12); # Get good velocity for obj # bezier interpolate might be better than clamp for smoothness
 			#held_object.position = desired_position; # for debug
 			(held_object as RigidBody3D).linear_velocity = Vector3.ZERO; # it's usually bad to set this directly as it may also be set by RigidBody, but in this specific case it's fine, since we don't want it affected by RigidBody
 			(held_object as RigidBody3D).apply_impulse(desired_impulse);
 			
 			# cam_rot is the desired rotation
-			#var obj_rot = held_object.rotation; # TODO use dir from player rather than supposed camera dir
+			#var obj_rot = held_object.rotation;
 			#var rot_dir = Vector3(find_angle_difference(obj_rot.x, cam_rot.x),
 			#					  find_angle_difference(obj_rot.y, cam_rot.y),
 			#					  find_angle_difference(obj_rot.z, cam_rot.z)).normalized(); # this might be better if I submit to quaternion weirdness
 			
 			#var desired_torque_impulse = rot_dir;
-			held_object.rotation = Vector3.ZERO;
-			held_object.rotation.y = self.global_position.direction_to(held_object.global_position).x; # I was going to do something fancy but this seems to work perfectly
-			Hud.extra_text = held_object.rotation.y
+			
+			held_object.rotation.x = 0; held_object.rotation.z = 0;
+			held_object.rotation.y = lerp_angle(held_object.rotation.y, cam_rot.y, 5*delta); # I was going to do something fancy but this seems to work perfectly
+			
+			Hud.extra_text = str(held_object.rotation.y)+"\n"
 			#(held_object as RigidBody3D).apply_torque_impulse(desired_torque_impulse);
 	
 	if (Input.is_action_just_pressed("fire_blue")): fire_blue.emit(self); # fire portals
@@ -109,7 +117,6 @@ func _physics_process(delta):
 		if (held_object != null):
 			# Currently holding a prop, put it down
 			drop_object();
-
 		else:
 			var space_state = get_world_3d().direct_space_state # get the space
 			var mousepos = get_viewport().get_mouse_position(); # if moving, it may not be in the exact center of the screen
