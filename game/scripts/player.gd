@@ -20,6 +20,7 @@ const held_obj_impulse_scale = 6.0;
 const held_obj_rot_impulse_scale = PI/256;
 
 @onready var collider = $CollisionShape3D;
+@onready var mesh = $MeshInstance3D;
 @onready var head = $Head;
 @onready var camera = $Head/Camera3D;
 
@@ -124,7 +125,7 @@ func _physics_process(delta):
 			var origin = camera.project_ray_origin(mousepos); # ray start pos
 			var end = origin + camera.project_ray_normal(mousepos) * reach_distance; # ray end pos
 			var query = PhysicsRayQueryParameters3D.create(origin, end); # cast ray
-			query.exclude = [collider]; # the ray starts in the player's collider, but we don't want it to hit that so it needs to be exhempt
+			query.exclude = [collider,self]; # the ray starts in the player's collider, but we don't want it to hit that so it needs to be exhempt
 
 
 			var result = space_state.intersect_ray(query); # find out whether it hit anything
@@ -136,9 +137,11 @@ func _physics_process(delta):
 	
 	if (Input.is_action_pressed("crouch")): # TODO maybe sliding, maybe wall-running, maybe vaulting
 		(collider.shape as CapsuleShape3D).height = player_crouch_height; # scale size
+		(mesh.mesh as CapsuleMesh).height = player_crouch_height;
 		speed = walk_speed * crouch_speed_modifier; # can multiply every tick because it's set every tick
 	else:
 		(collider.shape as CapsuleShape3D).height = player_full_height;
+		(mesh.mesh as CapsuleMesh).height = player_full_height;
 	
 	if (Input.is_action_just_pressed("crouch")): # when you crouch your legs don't move up, but scaling is from center so we need to compensate
 		collider.position.y -= height_difference / 2;# half bc scales from center

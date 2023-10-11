@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://c6ea6rrabd0rn"]
+[gd_scene load_steps=12 format=3 uid="uid://c6ea6rrabd0rn"]
 
 [ext_resource type="Texture2D" uid="uid://b4w5gwyuupu6p" path="res://textures/dev.webp" id="1_8upds"]
 [ext_resource type="PackedScene" uid="uid://djxbwq1uang3u" path="res://objects/player.tscn" id="1_cmg1c"]
@@ -19,6 +19,18 @@ texture_filter = 5
 [sub_resource type="BoxShape3D" id="BoxShape3D_n8io3"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_rewa7"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_gbq42"]
+size = Vector3(1, 2, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_h1ve3"]
+size = Vector3(1, 2, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_3jaa4"]
+size = Vector3(2, 2, 2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ivoum"]
+size = Vector3(2, 2, 2)
 
 [node name="player_test" type="Node3D"]
 
@@ -46,7 +58,7 @@ transform = Transform3D(0.5, 0.612372, -0.612372, 3.09086e-08, 0.707107, 0.70710
 collision_layer = 2
 
 [node name="template_prop" type="RigidBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.46041, 4.91636)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.646861, 4.91636)
 collision_mask = 3
 metadata/isProp = true
 
@@ -59,3 +71,37 @@ mesh = SubResource("BoxMesh_rewa7")
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.953043, 0.302836, 0, -0.302836, 0.953043, 0, 1.84866, 9.45683)
 fov = 90.5
+
+[node name="wall" type="RigidBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, -0.446058, 0)
+collision_mask = 3
+axis_lock_linear_x = true
+axis_lock_linear_y = true
+axis_lock_linear_z = true
+axis_lock_angular_x = true
+axis_lock_angular_y = true
+axis_lock_angular_z = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="wall"]
+shape = SubResource("BoxShape3D_gbq42")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="wall"]
+mesh = SubResource("BoxMesh_h1ve3")
+surface_material_override/0 = SubResource("StandardMaterial3D_7glwo")
+
+[node name="slope" type="RigidBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.600253, 0.79981, 0, -0.79981, 0.600253, 0.272092, -2.12174, -3.78252)
+collision_mask = 3
+axis_lock_linear_x = true
+axis_lock_linear_y = true
+axis_lock_linear_z = true
+axis_lock_angular_x = true
+axis_lock_angular_y = true
+axis_lock_angular_z = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="slope"]
+shape = SubResource("BoxShape3D_3jaa4")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="slope"]
+mesh = SubResource("BoxMesh_ivoum")
+surface_material_override/0 = SubResource("StandardMaterial3D_7glwo")
