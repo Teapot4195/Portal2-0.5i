@@ -6,28 +6,30 @@
 [ext_resource type="Script" path="res://scripts/OrangePortalCamera.gd" id="2_utl3i"]
 [ext_resource type="PackedScene" uid="uid://djxbwq1uang3u" path="res://objects/player.tscn" id="3_xuy4c"]
 
-[sub_resource type="ViewportTexture" id="ViewportTexture_l8oy3"]
-viewport_path = NodePath("OrangePortal/SubViewport")
+[sub_resource type="ViewportTexture" id="ViewportTexture_upo4p"]
+viewport_path = NodePath("BluePortal/SubViewport")
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_broe8"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_jbc0m"]
 resource_local_to_scene = true
 render_priority = 0
 shader = ExtResource("2_ajery")
-shader_parameter/albedo = Color(1, 1, 1, 1)
-shader_parameter/point_size = 1.0
-shader_parameter/roughness = 1.0
+shader_parameter/albedo = null
+shader_parameter/point_size = null
+shader_parameter/roughness = null
 shader_parameter/metallic_texture_channel = null
-shader_parameter/specular = 0.5
-shader_parameter/metallic = 0.0
-shader_parameter/uv1_scale = Vector3(1, 1, 1)
-shader_parameter/uv1_offset = Vector3(0, 0, 0)
-shader_parameter/uv2_scale = Vector3(1, 1, 1)
-shader_parameter/uv2_offset = Vector3(0, 0, 0)
-shader_parameter/texture_albedo = SubResource("ViewportTexture_l8oy3")
+shader_parameter/specular = null
+shader_parameter/metallic = null
+shader_parameter/uv1_scale = Vector3(1, 1, 0)
+shader_parameter/uv1_offset = null
+shader_parameter/uv2_scale = Vector3(1, 1, 0)
+shader_parameter/uv2_offset = null
+shader_parameter/texture_albedo = SubResource("ViewportTexture_upo4p")
 
-[sub_resource type="BoxMesh" id="BoxMesh_0n33f"]
-material = SubResource("ShaderMaterial_broe8")
-size = Vector3(1, 2, 0)
+[sub_resource type="PlaneMesh" id="PlaneMesh_lrti4"]
+resource_local_to_scene = true
+material = SubResource("ShaderMaterial_jbc0m")
+size = Vector2(1, 2)
+orientation = 2
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_oka6k"]
 viewport_path = NodePath("OrangePortal/SubViewport")
@@ -60,7 +62,7 @@ script = ExtResource("1_h2na1")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="BluePortal"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -3)
-mesh = SubResource("BoxMesh_0n33f")
+mesh = SubResource("PlaneMesh_lrti4")
 skeleton = NodePath("../..")
 
 [node name="TextureRect" type="TextureRect" parent="BluePortal"]

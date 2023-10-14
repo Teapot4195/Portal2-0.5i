@@ -4,6 +4,9 @@ extends Node3D
 @onready var OrangePortal_Hitbox: Node3D = $OrangePortal/Area3D;
 @onready var Player_target: CharacterBody3D = $Player;
 
+@onready var blue_subview = $BluePortal/SubViewport;
+@onready var blue_mesh = $BluePortal/MeshInstance3D;
+
 var Blue_Portal_target: Vector3;
 var Orange_Portal_target: Vector3;
 
@@ -12,7 +15,7 @@ var in_box_orange: bool = false;
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	pass # Replace with function body.
+	pass # Replace with function body. 
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
