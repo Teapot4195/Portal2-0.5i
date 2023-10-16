@@ -1,5 +1,7 @@
 # Portal2+0.5i
 
+A Fanmade Sequel to the original portal series
+
 ## Building a copy for yourself
 
 ### Prerequisites
